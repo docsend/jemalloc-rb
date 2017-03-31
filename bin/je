@@ -3,13 +3,15 @@
 def usage
   puts <<END
   Usage: je [ARGS]...
-  
+
   Options:
     -v        verbose mode
     --version show version
 END
   exit
 end
+
+$stdout.sync = true
 
 # Option parsing
 $verbose = false
@@ -28,10 +30,10 @@ usage() if argv.length == 0
 # Set ENV for preloading jemalloc
 lib_dir = File.expand_path('../lib/', File.dirname(__FILE__))
 if File.exists? (lib_dir + "/jemalloc.so")
-  puts "=> Injecting jemalloc..." if $verbose
+  puts "=> Injecting jemalloc using LD_PRELOAD..." if $verbose
   ENV.store("LD_PRELOAD", lib_dir + "/jemalloc.so")
 elsif File.exists? (lib_dir + "/jemalloc.bundle")
-  puts "=> Injecting jemalloc..." if $verbose
+  puts "=> Injecting jemalloc using DYLD_INSERT_LIBRARIES..." if $verbose
   ENV.store("DYLD_INSERT_LIBRARIES", lib_dir + "/jemalloc.bundle")
 else
   puts "=> Skip injecting jemalloc. Your platform is not supported." if $verbose
